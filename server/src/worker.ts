@@ -4,7 +4,7 @@ import { createMcpServerFromRepository } from "./mcp/server-factory.js";
 import { D1ReadingRepository } from "./repositories/d1-reading-repository.js";
 import { CloudSourceService } from "./services/cloud-source-service.js";
 import { handleSourceRoute } from "./source-routes.js";
-import { R2SourceObjectStorage } from "./storage/r2-source-object-storage.js";
+import { D1SourceObjectStorage } from "./storage/d1-source-object-storage.js";
 import { getWorkerRoute } from "./worker-router.js";
 
 export default {
@@ -13,7 +13,7 @@ export default {
     const route = getWorkerRoute(url, env.MCP_PATH_TOKEN);
 
     if (route === "health") {
-      return Response.json({ ok: true, app: "S×S 小窝共读", version: "0.2.1" });
+      return Response.json({ ok: true, app: "S×S 小窝共读", version: "0.2.1-d1" });
     }
     if (route === "misconfigured") {
       console.error(JSON.stringify({ message: "MCP_PATH_TOKEN is not configured" }));
@@ -25,7 +25,7 @@ export default {
 
     try {
       const repository = new D1ReadingRepository(env.DB);
-      const sourceStorage = new R2SourceObjectStorage(env.SOURCES_BUCKET);
+      const sourceStorage = new D1SourceObjectStorage(env.DB);
       const sourceService = new CloudSourceService(repository, sourceStorage);
       if (route === "source") {
         return handleSourceRoute(request, sourceService);
